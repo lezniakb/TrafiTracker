@@ -6,5 +6,7 @@ app = Flask("__name__")
 def index():
     data = api.process_data()
     carsNum = len(data)
-    print(carsNum)
-    return render_template("index.html", id=data[0]["id"], carsNum=carsNum)
+    return render_template(
+        "index.html",
+        id=data[0]["id"],
+        carsNum=carsNum)

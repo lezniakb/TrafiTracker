@@ -22,12 +22,20 @@ def fetch_data():
 
 def process_data():
     data = fetch_data()
+
+    if not len(data):
+        return {}
+
     for i in range(0, len(data)):
         lat = data[i]["lat"]
         lng = data[i]["lng"]
+
         # https://www.google.pl/maps/search/lat,+lng/@lat,lng,17z
-        g_maps_url = (f"https://www.google.pl/maps/search/"
-                      f"{lat},+{lng}/"
-                      f"@{lat},{lng},17z")
+        g_maps_url = (
+            f"https://www.google.pl/maps/search/"
+            f"{lat},+{lng}/"
+            f"@{lat},{lng},17z"
+        )
         data[i]["gmaps"] = g_maps_url
+
     return data
