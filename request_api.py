@@ -26,7 +26,7 @@ def fetch_data():
 
     response = response.json()
 
-    if len(response) == 0:
+    if response is None:
         print("No data retrieved")
         return None
 
@@ -37,7 +37,7 @@ def fetch_data():
 def process_data():
     data = fetch_data()
 
-    if not len(data):
+    if not data:
         return {}
 
     for i in range(0, len(data)):

@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl-PL">
   <head>
+    <title>TrafiTracker</title>
     <link rel="stylesheet" href="../static/style.css">
     <!--<meta http-equiv="refresh" content="30" -->
+
     <meta charset="UTF-8">
     <meta name="description" content="Traficar application tracking relocation cars">
     <meta name="keywords" content="Traficar, relocation, discount">
@@ -20,7 +22,7 @@
   {% if cars %}
     <div class="container">
       {% for car in cars %}
-      <div><img src="../static/img/car_placeholder.jpg">
+      <div><img src="../static/img/car_placeholder.jpg" alt="">
         <h4>Lokalizacja: {{car['location']}}<br></h4>
         <h4>Model: {{car['modelName']}}<br></h4>
         <h4>Rejestracja: {{car['regPlate']}}<br></h4>
@@ -28,12 +30,18 @@
         <h4>Zasięg: {{car['range']}} km<br></h4>
         <h4>Dostępny: {{car['available']}}<br></h4>
         <h4>Ostatnia aktualizacja: {{car['lastUpdate']}}</h4>
-        <div><a href={{car['gmaps']}}>Google Maps</a></div>
+        <div>
+          <a target="_blank"
+            rel="noopener noreferrer"
+            href={{car['gmaps']}}>Google Maps
+          </a>
+        </div>
+
       </div>
       {% endfor %}
     </div>
   {% else %}
-    <h3>Brak danych!</h3>
+    <h3>Brak aut z możliwością relokacji!</h3>
   {% endif %}
 
   </body>
