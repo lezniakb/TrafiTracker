@@ -18,6 +18,7 @@ def prepare_data():
 
     cars = []
     for car in data:
+        car["available"] = "Tak" if car["available"] == "True" else "Nie"
+        car["lastUpdate"] = car["lastUpdate"].replace("T", " ")[:-1]
         cars.append(car)
-
     return cars
