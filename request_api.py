@@ -38,4 +38,7 @@ def process_data():
         )
         data[i]["gmaps"] = g_maps_url
 
+    print(data)
     return data
+
+process_data()
