@@ -22,7 +22,7 @@
       {% for car in cars %}
       <div><img src="../static/img/car_placeholder.jpg">
         <h4>Lokalizacja: {{car['location']}}<br></h4>
-        <h4>Model: TBA<br></h4>
+        <h4>Model: {{car['modelName']}}<br></h4>
         <h4>Rejestracja: {{car['regPlate']}}<br></h4>
         <h4>Paliwa: {{car['fuel']}} l<br></h4>
         <h4>Zasięg: {{car['range']}} km<br></h4>

@@ -1,5 +1,19 @@
 import requests
 
+car_models = {
+    2: "RENAULT Clio IV",
+    5: "RENAULT Zoe",
+    15: "RENAULT Master",
+    17: "RENAULT Clio V",
+    18: "DACIA Spring",
+    22: "DACIA Dokker",
+    59: "DACIA Sandero",
+    60: "RENAULT Arkana",
+    62: "RENAULT Megane E-Tech",
+    65: "RENAULT Express",
+    66: "NAVEE D1 Pro"
+}
+
 def fetch_data():
     url_params = "zoneId=9&discounts=false&discountType=Relokacja"
     target_url = "https://fioletowe.live/api/v1/cars?" + url_params
@@ -27,6 +41,7 @@ def process_data():
         return {}
 
     for i in range(0, len(data)):
+        # adding google maps link based on latitude and longitude
         lat = data[i]["lat"]
         lng = data[i]["lng"]
 
@@ -38,7 +53,8 @@ def process_data():
         )
         data[i]["gmaps"] = g_maps_url
 
-    print(data)
-    return data
+        # adding car model information
+        car_id = data[i]["modelId"]
+        data[i]["modelName"] = car_models[car_id]
 
-process_data()
+    return data
