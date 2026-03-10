@@ -14,14 +14,21 @@
   <div class="header">
     <div></div>
     <div><img src="../static/img/logo.png" alt="TrafiTracker logo"></div>
-    <div><button type="button">Refresh</button></div>
+    <div><button onClick="window.location.reload();">Odśwież!</button></div>
   </div>
 
   {% if id %}
     <div class="container">
-      {% for car in range(1, carsNum+1) %}
-      <div><img src="../static/img/car_placeholder.jpg">TESTTEST
-        <div>testtest</div>
+      {% for car in cars %}
+      <div><img src="../static/img/car_placeholder.jpg">
+        Lokalizacja: {{car['location']}}<br>
+        Model: TBA<br>
+        Rejestracja: {{car['regPlate']}}<br>
+        Paliwa: {{car['fuel']}}<br>
+        Zasięg: {{car['range']}} km<br>
+        Dostępny: {{car['available']}}<br>
+        Ostatnia aktualizaja: {{car['lastUpdate']}}
+        <div><a href={{car['gmaps']}}>Google Maps</a></div>
       </div>
       {% endfor %}
     </div>

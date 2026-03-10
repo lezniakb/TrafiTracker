@@ -8,7 +8,7 @@ def index():
     return render_template(
         "index.html",
         id=params["id"],
-        carsNum=params["carsNum"])
+        cars=params["cars"])
 
 
 def prepare_data():
@@ -17,16 +17,19 @@ def prepare_data():
     if data is None:
         params = {
             "id": None,
-            "carsNum": None
+            "cars": [],
         }
         return params
 
     id = data[0]["id"]
-    carsNum = len(data)
+    cars = []
+
+    for car in data:
+        cars.append(car)
 
     params = {
         "id": id,
-        "carsNum": carsNum
+        "cars": cars
     }
 
     return params
