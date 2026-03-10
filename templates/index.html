@@ -21,13 +21,13 @@
     <div class="container">
       {% for car in cars %}
       <div><img src="../static/img/car_placeholder.jpg">
-        Lokalizacja: {{car['location']}}<br>
-        Model: TBA<br>
-        Rejestracja: {{car['regPlate']}}<br>
-        Paliwa: {{car['fuel']}}<br>
-        Zasięg: {{car['range']}} km<br>
-        Dostępny: {{car['available']}}<br>
-        Ostatnia aktualizaja: {{car['lastUpdate']}}
+        <h4>Lokalizacja: {{car['location']}}<br></h4>
+        <h4>Model: TBA<br></h4>
+        <h4>Rejestracja: {{car['regPlate']}}<br></h4>
+        <h4>Paliwa: {{car['fuel']}} l<br></h4>
+        <h4>Zasięg: {{car['range']}} km<br></h4>
+        <h4>Dostępny: {{car['available']}}<br></h4>
+        <h4>Ostatnia aktualizacja: {{car['lastUpdate']}}</h4>
         <div><a href={{car['gmaps']}}>Google Maps</a></div>
       </div>
       {% endfor %}

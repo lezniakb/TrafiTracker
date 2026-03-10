@@ -2,25 +2,53 @@ body {
     background-color: #8e75ff;
 }
 
-img {
-    display: block;
-    margin: auto;
-    width: 25%;
-    border-radius: 12px;
-}
-
-.container {
+.header {
     display: grid;
     grid-template-columns: auto auto auto;
     background-color: #8e75ff;
     padding: 10px;
 }
 
+.header div {
+    display: block;
+    margin: auto 5px auto 15%;
+    width: 80%;
+    padding: 10px;
+    font-size: 50px;
+    text-align: center;
+}
+
+.header img {
+    display: block;
+    width: 50%;
+    margin: auto;
+    border-radius: 12px;
+}
+
+button {
+    display: block;
+    font-size: 100%;
+    margin-top: 40px;
+    background-color: #6501ca;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #4c009a;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: auto auto auto;
+}
+
 .container div {
     display: block;
-    margin-top: 20px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 20px auto auto 50px;
     width: 80%;
     border: 2px solid black;
     border-radius: 12px;
@@ -38,26 +66,12 @@ img {
     text-align: center;
 }
 
-.header {
-    display: grid;
-    grid-template-columns: auto auto auto;
-    background-color: #8e75ff;
-    padding: 10px;
+.container h4 {
+    margin: 10px auto 2px 70px;
+    padding: 2px;
 }
 
-.header div {
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    width: 80%;
-    padding: 10px;
-    font-size: 50px;
-    text-align: center;
-}
-
-.header img {
-    display: block;
-    margin: auto;
-    width: 50%;
-    border-radius: 12px;
+a {
+  display: flex;
+  justify-content: center;
 }
