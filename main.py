@@ -4,32 +4,20 @@ app = Flask("__name__")
 
 @app.route("/")
 def index():
-    params = prepare_data()
+    cars = prepare_data()
     return render_template(
         "index.html",
-        id=params["id"],
-        cars=params["cars"])
+        cars=cars)
 
 
 def prepare_data():
     data = api.process_data()
 
     if data is None:
-        params = {
-            "id": None,
-            "cars": [],
-        }
-        return params
+        return None
 
-    id = data[0]["id"]
     cars = []
-
     for car in data:
         cars.append(car)
 
-    params = {
-        "id": id,
-        "cars": cars
-    }
-
-    return params
+    return cars
