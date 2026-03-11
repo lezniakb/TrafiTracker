@@ -1,4 +1,8 @@
 import requests
+import os
+from winotify import Notification, audio
+
+icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "img", "favicon.ico")
 
 car_models = {
     2: "RENAULT Clio IV",
@@ -50,7 +54,7 @@ def add_data():
         return {}
 
     for i in range(0, len(data)):
-        # adding google maps link based on latitude and longitude
+        # adding Google Maps link based on latitude and longitude
         lat = data[i]["lat"]
         lng = data[i]["lng"]
 
@@ -86,4 +90,13 @@ def prepare_data_to_gui():
         car["available"] = "Tak" if car["available"] == True else "Nie"
         car["lastUpdate"] = car["lastUpdate"].replace("T", " ")[:-1]
         cars.append(car)
+
+    new_car_toast = Notification(
+        app_id="TrafiTracker",
+        title="Nowe auta!",
+        msg="",
+        duration="short",
+        icon=icon_path
+    )
+    new_car_toast.show()
     return cars
