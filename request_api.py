@@ -1,8 +1,15 @@
 import requests
 import os
-from winotify import Notification, audio
+from winotify import Notification
 
 icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "img", "favicon.ico")
+failed_connection_toast = Notification(
+    app_id="TrafiTracker",
+    title="Brak połączenia z serwerami",
+    msg="Nie udało się wczytać danych z serwerów.",
+    duration="short",
+    icon=icon_path
+)
 
 car_models = {
     2: "RENAULT Clio IV",
@@ -31,17 +38,20 @@ def fetch_data():
     url_params = "zoneId=9&discounts=false&discountType=Relokacja"
     target_url = "https://fioletowe.live/api/v1/cars?" + url_params
 
-    response = requests.get(target_url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+    # if GET request fails, raise an exception
+    try:
+        response = requests.get(target_url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"})
+    except requests.exceptions.ConnectionError as exception:
+        print(f"Couldn't connect to api, exception:{exception}")
+        failed_connection_toast.show()
+        return None
 
+    # if http status code is not 200 OK (no connection or other problems)
     if response.status_code != 200:
-        print(f"Couldn't connect to api, status code: {response.status_code}")
+        print(f"The server is returning HTTP status code {response.status_code}")
         return None
 
     response = response.json()
-
-    if response is None:
-        print("No data retrieved")
-        return None
 
     parsed_json = response["cars"]
     return parsed_json
@@ -50,8 +60,11 @@ def fetch_data():
 def add_data():
     data = fetch_data()
 
-    if not data:
-        return {}
+    # if there is saved data in JSON: use it and check against new cars
+    # else: there is no data, so don't create windows toast!
+
+    if data is None:
+        return None
 
     for i in range(0, len(data)):
         # adding Google Maps link based on latitude and longitude
@@ -91,12 +104,12 @@ def prepare_data_to_gui():
         car["lastUpdate"] = car["lastUpdate"].replace("T", " ")[:-1]
         cars.append(car)
 
-    new_car_toast = Notification(
-        app_id="TrafiTracker",
-        title="Nowe auta!",
-        msg="",
-        duration="short",
-        icon=icon_path
-    )
-    new_car_toast.show()
+    # new_car_toast = Notification(
+    #     app_id="TrafiTracker",
+    #     title="Nowe auta!",
+    #     msg="",
+    #     duration="short",
+    #     icon=icon_path
+    # )
+    # new_car_toast.show()
     return cars
