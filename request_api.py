@@ -1,7 +1,13 @@
 import requests
 import os
+import json
 from winotify import Notification
 
+# if old JSON file exists, delete it
+if os.path.exists("cars.json"):
+    os.remove("cars.json")
+
+# prepare Windows toasts
 icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "img", "favicon.ico")
 failed_connection_toast = Notification(
     app_id="TrafiTracker",
@@ -34,6 +40,47 @@ image_names = [
     "dacia-sandero.png"
 ]
 
+def find_new_cars(latest_data):
+    if os.path.exists("cars.json"):
+        found_cars_id = []
+        new_cars_found = 0
+
+        with open("cars.json", "r") as cars_file:
+            found_cars = json.load(cars_file)
+
+        # save which car IDs were already present
+        for old_car in found_cars:
+            found_cars_id.append(old_car["id"])
+
+        # check which car IDs are new, and report them as new cars
+        for new_car in latest_data:
+            if new_car["id"] in found_cars_id:
+                continue
+            new_cars_found += 1
+
+        if new_cars_found == 1:
+            new_cars_toast = Notification(
+                app_id="TrafiTracker",
+                title=f"Znaleziono 1 nowe auto!",
+                msg="Przejdź do panelu aplikacji",
+                duration="short",
+                icon=icon_path
+            )
+            new_cars_toast.show()
+        elif new_cars_found > 1:
+            new_cars_toast = Notification(
+                app_id="TrafiTracker",
+                title=f"Znaleziono {new_cars_found} nowe auta!",
+                msg="Przejdź do panelu aplikacji",
+                duration="short",
+                icon=icon_path
+            )
+            new_cars_toast.show()
+
+    # save cars.json from the latest data
+    with open("cars.json", "w") as cars_json:
+        json.dump(latest_data, cars_json)
+
 def fetch_data():
     url_params = "zoneId=9&discounts=false&discountType=Relokacja"
     target_url = "https://fioletowe.live/api/v1/cars?" + url_params
@@ -52,16 +99,15 @@ def fetch_data():
         return None
 
     response = response.json()
-
     parsed_json = response["cars"]
+
+    find_new_cars(parsed_json)
+
     return parsed_json
 
 
 def add_data():
     data = fetch_data()
-
-    # if there is saved data in JSON: use it and check against new cars
-    # else: there is no data, so don't create windows toast!
 
     if data is None:
         return None
@@ -104,12 +150,4 @@ def prepare_data_to_gui():
         car["lastUpdate"] = car["lastUpdate"].replace("T", " ")[:-1]
         cars.append(car)
 
-    # new_car_toast = Notification(
-    #     app_id="TrafiTracker",
-    #     title="Nowe auta!",
-    #     msg="",
-    #     duration="short",
-    #     icon=icon_path
-    # )
-    # new_car_toast.show()
     return cars
