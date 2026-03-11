@@ -22,7 +22,7 @@
   {% if cars %}
     <div class="container">
       {% for car in cars %}
-      <div><img src="../static/img/car_placeholder.jpg" alt="">
+      <div><img src="../static/img/{{car['imageName']}}" alt="">
         <h4>Lokalizacja: {{car['location']}}<br></h4>
         <h4>Model: {{car['modelName']}}<br></h4>
         <h4>Rejestracja: {{car['regPlate']}}<br></h4>

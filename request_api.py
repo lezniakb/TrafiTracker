@@ -14,6 +14,15 @@ car_models = {
     66: "NAVEE D1 Pro"
 }
 
+image_names = [
+    "renault-express.png",
+    "renault-master.png",
+    "renault-arkana.png",
+    "renault-clio.png",
+    "dacia-dokker.png",
+    "dacia-sandero.png"
+]
+
 def fetch_data():
     url_params = "zoneId=9&discounts=false&discountType=Relokacja"
     target_url = "https://fioletowe.live/api/v1/cars?" + url_params
@@ -34,7 +43,7 @@ def fetch_data():
     return parsed_json
 
 
-def process_data():
+def add_data():
     data = fetch_data()
 
     if not data:
@@ -55,6 +64,26 @@ def process_data():
 
         # adding car model information
         car_id = data[i]["modelId"]
-        data[i]["modelName"] = car_models[car_id]
+        car_model = car_models[car_id]
+        data[i]["modelName"] = car_model
+
+        # adding image name
+        car_image_name = (car_model.split(" ")[0] + "-" + car_model.split(" ")[1]).lower() + ".png"
+        if car_image_name not in image_names:
+            car_image_name = "no-image.png"
+        data[i]["imageName"] = car_image_name
 
     return data
+
+def prepare_data_to_gui():
+    data = add_data()
+
+    if data is None:
+        return None
+
+    cars = []
+    for car in data:
+        car["available"] = "Tak" if car["available"] == True else "Nie"
+        car["lastUpdate"] = car["lastUpdate"].replace("T", " ")[:-1]
+        cars.append(car)
+    return cars
