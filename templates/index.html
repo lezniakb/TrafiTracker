@@ -2,9 +2,15 @@
 <html lang="pl-PL">
   <head>
     <title>TrafiTracker</title>
+    <!-- link -->
     <link rel="stylesheet" href="../static/style.css">
-    <!--<meta http-equiv="refresh" content="30" -->
-
+    <link rel="apple-touch-icon" sizes="76x76" href="../static/img/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../static/img/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="../static/img/favicon.ico">
+    <link rel="mask-icon" href="../static/img/favicon.ico" color="#9c2bcb">
+    <link rel="shortcut icon" href="../static/img/favicon.ico">
+    <!-- meta -->
+    <meta http-equiv="refresh" content="30">
     <meta charset="UTF-8">
     <meta name="description" content="Traficar application tracking relocation cars">
     <meta name="keywords" content="Traficar, relocation, discount">
@@ -13,12 +19,14 @@
   </head>
   <body>
 
+  <!-- logo with button -->
   <div class="header">
     <div></div>
     <div><img src="../static/img/logo.png" alt="TrafiTracker logo"></div>
     <div><button onClick="window.location.reload();">Odśwież!</button></div>
   </div>
 
+  <!-- dynamic jinja car table -->
   {% if cars %}
     <div class="container">
       {% for car in cars %}
