@@ -3,11 +3,15 @@ import os
 import json
 from winotify import Notification
 
-# if old JSON file exists, delete it
+# if old cars.json file exists, delete it
 if os.path.exists("cars.json"):
     os.remove("cars.json")
 
-# prepare Windows toasts
+# if old archive.json file exists, delete it
+if os.path.exists("archive.json"):
+    os.remove("archive.json")
+
+# prepare Windows toast
 icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "img", "favicon.ico")
 failed_connection_toast = Notification(
     app_id="TrafiTracker",
@@ -41,20 +45,23 @@ image_names = [
 ]
 
 def find_new_cars(latest_data):
+    archive_cars = []
     if os.path.exists("cars.json"):
-        found_cars_id = []
+        found_old_cars_id = []
+        found_new_cars_id = []
         new_cars_found = 0
 
         with open("cars.json", "r") as cars_file:
-            found_cars = json.load(cars_file)
+            old_cars = json.load(cars_file)
 
         # save which car IDs were already present
-        for old_car in found_cars:
-            found_cars_id.append(old_car["id"])
+        for old_car in old_cars:
+            found_old_cars_id.append(old_car["id"])
 
-        # check which car IDs are new, and report them as new cars
         for new_car in latest_data:
-            if new_car["id"] in found_cars_id:
+            found_new_cars_id.append(new_car["id"])
+            # report the number of new cars for toast text
+            if new_car["id"] in found_old_cars_id:
                 continue
             new_cars_found += 1
 
@@ -77,9 +84,46 @@ def find_new_cars(latest_data):
             )
             new_cars_toast.show()
 
+        # check for cars that stopped being available
+        for old_car in old_cars:
+            if old_car["id"] not in found_new_cars_id:
+                archive_cars.append(old_car)
+
+        if len(archive_cars):
+            car_archived_toast = Notification(
+                app_id="TrafiTracker",
+                title="Przynajmniej jeden Traficar przestał być dostępny!",
+                msg=f"Zarchiwizowanych aut: {len(archive_cars)}",
+                duration="short",
+                icon=icon_path
+            )
+            car_archived_toast.show()
+
+            if os.path.exists("archive.json"):
+                # append older cars from previous iterations to currently found old cars
+                with open("archive.json", "r") as file:
+                    file_archive = json.load(file)
+                    archive_cars.append(file_archive)
+
+            # dump all previously saved old cars
+            with open("archive.json", "w") as archive_file:
+                json.dump(archive_cars, archive_file)
+
+            # ADD INFO THAT THE CAR IS ARCHIVED
+
     # save cars.json from the latest data
     with open("cars.json", "w") as cars_json:
         json.dump(latest_data, cars_json)
+
+
+    if len(archive_cars):
+        latest_data.append(archive_cars)
+
+        # for testing
+        with open("combined.json", "w") as combined_file:
+            json.dump(latest_data, combined_file)
+
+    return latest_data
 
 def fetch_data():
     url_params = "zoneId=9&discounts=false&discountType=Relokacja"
