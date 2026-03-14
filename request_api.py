@@ -90,6 +90,7 @@ def find_new_cars(latest_data):
         # check for cars that stopped being available
         for old_car in old_cars:
             if old_car["id"] not in found_new_cars_id:
+                old_car["available"] = False
                 archive_cars.append(old_car)
 
         if len(archive_cars):
@@ -188,7 +189,7 @@ def prepare_data_to_gui():
 
     cars = []
     for car in data:
-        car["available"] = "Tak" if car["available"] == True else "Nie"
+        car["availableGUI"] = "Tak" if car["available"] == True else "Nie"
         car["lastUpdate"] = car["lastUpdate"].replace("T", " ")[:-1]
         cars.append(car)
 
