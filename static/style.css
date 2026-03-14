@@ -18,7 +18,7 @@ body {
     text-align: center;
 }
 
-.header img {
+.header .imgCar {
     display: block;
     width: 50%;
     margin: auto;
@@ -58,10 +58,18 @@ button:hover {
     text-align: left;
 }
 
-.container img {
+.container .imgCar {
     display: block;
     margin: auto;
     width: 55%;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.container .imgIcon {
+    display: block;
+    margin: auto;
+    width: 8%;
     border-radius: 12px;
     text-align: center;
 }

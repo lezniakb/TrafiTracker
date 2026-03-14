@@ -91,6 +91,7 @@ def find_new_cars(latest_data):
         for old_car in old_cars:
             if old_car["id"] not in found_new_cars_id:
                 old_car["available"] = False
+                old_car["availableImage"] = "red-av.png"
                 archive_cars.append(old_car)
 
         if len(archive_cars):
@@ -112,8 +113,6 @@ def find_new_cars(latest_data):
             # dump all previously saved old cars
             with open("archive.json", "w") as archive_file:
                 json.dump(archive_cars, archive_file)
-
-            # ADD INFO THAT THE CAR IS ARCHIVED
 
     if len(archive_cars):
         for car in archive_cars:
@@ -143,7 +142,7 @@ def fetch_data():
 
     response = response.json()
     parsed_json = response["cars"]
-
+    # process json data
     find_new_cars(parsed_json)
 
     return parsed_json
@@ -156,6 +155,10 @@ def add_data():
         return None
 
     for i in range(0, len(data)):
+        # skip adding information, if car is not available anymore
+        if not data[i]["available"]:
+            continue
+
         # adding Google Maps link based on latitude and longitude
         lat = data[i]["lat"]
         lng = data[i]["lng"]
@@ -178,6 +181,9 @@ def add_data():
         if car_image_name not in image_names:
             car_image_name = "no-image.png"
         data[i]["imageName"] = car_image_name
+
+        # adding availability image
+        data[i]["availableImage"] = "green-av.png"
 
     return data
 

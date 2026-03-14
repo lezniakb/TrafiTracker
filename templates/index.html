@@ -30,13 +30,14 @@
   {% if cars %}
     <div class="container">
       {% for car in cars %}
-      <div><img src="../static/img/{{car['imageName']}}" alt="">
+      <div><img class="imgCar" src="../static/img/{{car['imageName']}}" alt="">
+        <img class="imgIcon" src="../static/img/{{car['availableImage']}}" alt="">
         <h4>Lokalizacja: {{car['location']}}<br></h4>
         <h4>Model: {{car['modelName']}}<br></h4>
         <h4>Rejestracja: {{car['regPlate']}}<br></h4>
         <h4>Paliwa: {{car['fuel']}} l<br></h4>
         <h4>Zasięg: {{car['range']}} km<br></h4>
-        <h4>Dostępny: {{car['availableGUI']}}<br></h4>
+        <h4>Dostępny: {{car['availableGUI']}}</h4>
         <h4>Ostatnia aktualizacja: {{car['lastUpdate']}}</h4>
         <div>
           <a target="_blank"
