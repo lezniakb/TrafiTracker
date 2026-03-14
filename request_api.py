@@ -88,6 +88,7 @@ def find_new_cars(latest_data):
             new_cars_toast.show()
 
         # check for cars that stopped being available
+        # REDUNTANT IF CAR IS ALREADY ARCHIVED
         for old_car in old_cars:
             if old_car["id"] not in found_new_cars_id:
                 old_car["available"] = False
@@ -108,7 +109,8 @@ def find_new_cars(latest_data):
                 # append older cars from previous iterations to currently found old cars
                 with open("archive.json", "r") as file:
                     file_archive = json.load(file)
-                    archive_cars.append(file_archive)
+                    for old_car in file_archive:
+                        archive_cars.append(old_car)
 
             # dump all previously saved old cars
             with open("archive.json", "w") as archive_file:
@@ -155,10 +157,6 @@ def add_data():
         return None
 
     for i in range(0, len(data)):
-        # skip adding information, if car is not available anymore
-        if not data[i]["available"]:
-            continue
-
         # adding Google Maps link based on latitude and longitude
         lat = data[i]["lat"]
         lng = data[i]["lng"]
@@ -180,10 +178,11 @@ def add_data():
         car_image_name = (car_model.split(" ")[0] + "-" + car_model.split(" ")[1]).lower() + ".png"
         if car_image_name not in image_names:
             car_image_name = "no-image.png"
-        data[i]["imageName"] = car_image_name
+        data[i]["carImage"] = car_image_name
 
         # adding availability image
-        data[i]["availableImage"] = "green-av.png"
+        if data[i]["available"]:
+            data[i]["availableImage"] = "green-av.png"
 
     return data
 
@@ -196,7 +195,8 @@ def prepare_data_to_gui():
     cars = []
     for car in data:
         car["availableGUI"] = "Tak" if car["available"] == True else "Nie"
-        car["lastUpdate"] = car["lastUpdate"].replace("T", " ")[:-1]
+        if "T" in car["lastUpdate"]:
+            car["lastUpdate"] = car["lastUpdate"].replace("T", " ")[:-1]
         cars.append(car)
 
     return cars
