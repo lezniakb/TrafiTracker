@@ -11,6 +11,9 @@ if os.path.exists("cars.json"):
 if os.path.exists("archive.json"):
     os.remove("archive.json")
 
+if os.path.exists("combined.json"):
+    os.remove("combined.json")
+
 # prepare Windows toast
 icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "img", "favicon.ico")
 failed_connection_toast = Notification(
@@ -111,17 +114,12 @@ def find_new_cars(latest_data):
 
             # ADD INFO THAT THE CAR IS ARCHIVED
 
-    # save cars.json from the latest data
-    with open("cars.json", "w") as cars_json:
-        json.dump(latest_data, cars_json)
-
-
     if len(archive_cars):
-        latest_data.append(archive_cars)
+        for car in archive_cars:
+            latest_data.append(car)
 
-        # for testing
-        with open("combined.json", "w") as combined_file:
-            json.dump(latest_data, combined_file)
+    with open("cars.json", "w") as combined_file:
+        json.dump(latest_data, combined_file)
 
     return latest_data
 
