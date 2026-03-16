@@ -3,6 +3,10 @@ import os
 import json
 from winotify import Notification
 
+# Zepsute:
+# Ostatnia aktualizacja (nie aktualizuje czasu + jest cofnięte o godzinę)
+# Przetwarzanie danych
+
 # if old cars.json file exists, delete it
 if os.path.exists("cars.json"):
     os.remove("cars.json")
@@ -40,6 +44,39 @@ image_names = [
     "dacia-sandero.png"
 ]
 
+def add_new_info(car_list):
+    for car in car_list:
+        if "gmaps" in car:
+            continue
+        # adding Google Maps link based on latitude and longitude
+        lat = car["lat"]
+        lng = car["lng"]
+
+        # https://www.google.pl/maps/search/lat,+lng/@lat,lng,17z
+        g_maps_url = (
+            f"https://www.google.pl/maps/search/"
+            f"{lat},+{lng}/"
+            f"@{lat},{lng},17z"
+        )
+        car["gmaps"] = g_maps_url
+
+        # adding car model information
+        car_id = car["modelId"]
+        car_model = car_models[car_id]
+        car["modelName"] = car_model
+
+        # adding image name
+        car_image_name = (car_model.split(" ")[0] + "-" + car_model.split(" ")[1]).lower() + ".png"
+        if car_image_name not in image_names:
+            car_image_name = "no-image.png"
+        car["carImage"] = car_image_name
+
+        # adding availability image
+        if car["available"]:
+            car["availableImage"] = "green-av.png"
+
+    return car_list
+
 def find_new_cars(latest_data):
     all_cars = []
     old_car_ids = []
@@ -52,6 +89,7 @@ def find_new_cars(latest_data):
     if not os.path.exists("cars.json"):
         for car in latest_data:
             all_cars.append(car)
+        add_new_info(all_cars)
         with open("cars.json", "w") as cars_file:
             json.dump(all_cars, cars_file)
         return all_cars
@@ -104,6 +142,7 @@ def find_new_cars(latest_data):
 
     # save results to .json file and return the list
     all_cars = old_cars + new_cars
+    all_cars = add_new_info(all_cars)
     with open("cars.json", "w") as cars_file:
         json.dump(all_cars, cars_file)
 
@@ -134,50 +173,8 @@ def fetch_data():
     return processed_cars
 
 
-def add_data():
-    data = fetch_data()
-
-    if data is None:
-        return None
-
-    for i in range(0, len(data)):
-        if "gmaps" in data[i]:
-            continue
-
-        # adding Google Maps link based on latitude and longitude
-        lat = data[i]["lat"]
-        lng = data[i]["lng"]
-
-        # https://www.google.pl/maps/search/lat,+lng/@lat,lng,17z
-        g_maps_url = (
-            f"https://www.google.pl/maps/search/"
-            f"{lat},+{lng}/"
-            f"@{lat},{lng},17z"
-        )
-        data[i]["gmaps"] = g_maps_url
-
-        # adding car model information
-        car_id = data[i]["modelId"]
-        car_model = car_models[car_id]
-        data[i]["modelName"] = car_model
-
-        # adding image name
-        car_image_name = (car_model.split(" ")[0] + "-" + car_model.split(" ")[1]).lower() + ".png"
-        if car_image_name not in image_names:
-            car_image_name = "no-image.png"
-        data[i]["carImage"] = car_image_name
-
-        # adding availability image
-        if data[i]["available"]:
-            data[i]["availableImage"] = "green-av.png"
-
-    return data
-
 def prepare_data_to_gui():
-    data = add_data()
-
-    if data is None:
-        return None
+    data = fetch_data()
 
     cars = []
     for car in data:
