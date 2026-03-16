@@ -7,13 +7,6 @@ from winotify import Notification
 if os.path.exists("cars.json"):
     os.remove("cars.json")
 
-# if old archive.json file exists, delete it
-if os.path.exists("archive.json"):
-    os.remove("archive.json")
-
-if os.path.exists("combined.json"):
-    os.remove("combined.json")
-
 # prepare Windows toast
 icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "img", "favicon.ico")
 failed_connection_toast = Notification(
@@ -48,82 +41,73 @@ image_names = [
 ]
 
 def find_new_cars(latest_data):
-    archive_cars = []
-    if os.path.exists("cars.json"):
-        found_old_cars_id = []
-        found_new_cars_id = []
-        new_cars_found = 0
+    all_cars = []
+    old_car_ids = []
+    new_cars = []
+    new_car_ids = []
+    new_cars_counter = 0
+    removed_cars_counter = 0
 
-        with open("cars.json", "r") as cars_file:
-            old_cars = json.load(cars_file)
+    # scenario 1: cars.json doesn't exist, save all cars to a list, then to a .json file, then return the list
+    if not os.path.exists("cars.json"):
+        for car in latest_data:
+            all_cars.append(car)
+        with open("cars.json", "w") as cars_file:
+            json.dump(all_cars, cars_file)
+        return all_cars
 
-        # save which car IDs were already present
-        for old_car in old_cars:
-            found_old_cars_id.append(old_car["id"])
+    # load already saved cars
+    with open("cars.json", "r") as cars_file:
+        old_cars = json.load(cars_file)
 
-        for new_car in latest_data:
-            found_new_cars_id.append(new_car["id"])
-            # report the number of new cars for toast text
-            if new_car["id"] in found_old_cars_id:
-                continue
-            new_cars_found += 1
+    # add old cars from the .json file, and add their ids to a second list
+    for car in old_cars:
+        old_car_ids.append(car["id"])
 
-        if new_cars_found == 1:
-            new_cars_toast = Notification(
-                app_id="TrafiTracker",
-                title=f"Znaleziono 1 nowe auto!",
-                msg="Przejdź do panelu aplikacji",
-                duration="short",
-                icon=icon_path
-            )
-            new_cars_toast.show()
-        elif new_cars_found > 1:
-            new_cars_toast = Notification(
-                app_id="TrafiTracker",
-                title=f"Znaleziono {new_cars_found} nowe auta!",
-                msg="Przejdź do panelu aplikacji",
-                duration="short",
-                icon=icon_path
-            )
-            new_cars_toast.show()
+    # scenario 2: new cars appeared
+    for new_car in latest_data:
+        new_car_ids.append(new_car["id"])
+        if new_car["id"] not in old_car_ids:
+            # add new cars from the latest refresh
+            new_cars.append(new_car)
+            new_cars_counter += 1
 
-        # check for cars that stopped being available
-        # REDUNTANT IF CAR IS ALREADY ARCHIVED
-        for old_car in old_cars:
-            if old_car["id"] not in found_new_cars_id:
-                old_car["available"] = False
-                old_car["availableImage"] = "red-av.png"
-                archive_cars.append(old_car)
+    # create and show Windows toast for new cars
+    if new_cars_counter:
+        new_cars_toast = Notification(
+            app_id="TrafiTracker",
+            title="Nowe auta!",
+            msg=f"Znalezionych nowych aut: {new_cars_counter}",
+            duration="short",
+            icon=icon_path
+        )
+        new_cars_toast.show()
 
-        if len(archive_cars):
-            car_archived_toast = Notification(
-                app_id="TrafiTracker",
-                title="Przynajmniej jeden Traficar przestał być dostępny!",
-                msg=f"Zarchiwizowanych aut: {len(archive_cars)}",
-                duration="short",
-                icon=icon_path
-            )
-            car_archived_toast.show()
+    # update cars information if they stopped being available
+    for old_car in old_cars:
+        if old_car["id"] not in new_car_ids and old_car["available"] == True:
+            old_car["available"] = False
+            old_car["availableImage"] = "red-av.png"
+            removed_cars_counter += 1
+            print(old_car)
 
-            if os.path.exists("archive.json"):
-                # append older cars from previous iterations to currently found old cars
-                with open("archive.json", "r") as file:
-                    file_archive = json.load(file)
-                    for old_car in file_archive:
-                        archive_cars.append(old_car)
+    # create and show Windows toast if any car stopped being available
+    if removed_cars_counter:
+        car_archived_toast = Notification(
+            app_id="TrafiTracker",
+            title="Przynajmniej jeden Traficar przestał być dostępny!",
+            msg=f"Zarchiwizowanych aut: {removed_cars_counter}",
+            duration="short",
+            icon=icon_path
+        )
+        car_archived_toast.show()
 
-            # dump all previously saved old cars
-            with open("archive.json", "w") as archive_file:
-                json.dump(archive_cars, archive_file)
+    # save results to .json file and return the list
+    all_cars = old_cars + new_cars
+    with open("cars.json", "w") as cars_file:
+        json.dump(all_cars, cars_file)
 
-    if len(archive_cars):
-        for car in archive_cars:
-            latest_data.append(car)
-
-    with open("cars.json", "w") as combined_file:
-        json.dump(latest_data, combined_file)
-
-    return latest_data
+    return all_cars
 
 def fetch_data():
     url_params = "zoneId=9&discounts=false&discountType=Relokacja"
@@ -145,9 +129,9 @@ def fetch_data():
     response = response.json()
     parsed_json = response["cars"]
     # process json data
-    find_new_cars(parsed_json)
+    processed_cars = find_new_cars(parsed_json)
 
-    return parsed_json
+    return processed_cars
 
 
 def add_data():
@@ -157,6 +141,9 @@ def add_data():
         return None
 
     for i in range(0, len(data)):
+        if "gmaps" in data[i]:
+            continue
+
         # adding Google Maps link based on latitude and longitude
         lat = data[i]["lat"]
         lng = data[i]["lng"]
