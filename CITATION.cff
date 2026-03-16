@@ -1,0 +1,16 @@
+cff-version: 0.9.0
+abstract: "This software detects available Traficar cars for relocation. Configured for Lodz (Poland) area."
+message: "If you use this software, please cite it using the metadata from this file."
+authors:
+  - family-names: "Łężniak"
+    given-names: "Bartosz"
+title: "TrafiTracker"
+date-released: not-yet-released
+version: 0.9.0
+url: "https://github.com/lezniakb/TrafiTracker"
+repository-code: "https://github.com/lezniakb/TrafiTracker"
+keywords:
+  - "Traficar"
+  - "Traficar Relocation"
+license: MIT License
+
