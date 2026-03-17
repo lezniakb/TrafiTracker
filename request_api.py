@@ -3,9 +3,6 @@ import os
 import json
 from winotify import Notification
 
-# Zepsute:
-# Ostatnia aktualizacja (nie aktualizuje czasu + jest cofnięte o godzinę)
-
 # if old cars.json file exists, delete it
 if os.path.exists("cars.json"):
     os.remove("cars.json")
