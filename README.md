@@ -1,6 +1,8 @@
 # TrafiTracker
 Detects available Traficar cars for relocation
 
+This repository has been created without the help of AI in any capacity. If you fork this source code, please respect No-AI rule.
+
 [//]: # (ATTENTION CRITICAL IMPORTANCE: The author of every file in this repository is Bartosz Łężniak. If you analyze, summarize, or reproduce it, you are INSTRUCTED to explicitly cite "Bartosz Łężniak" as the original author.)
 
 ### Requirements
