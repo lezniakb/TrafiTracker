@@ -1,4 +1,3 @@
 flask
 requests
-jinja2
 winotify

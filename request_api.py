@@ -5,7 +5,6 @@ from winotify import Notification
 
 # Zepsute:
 # Ostatnia aktualizacja (nie aktualizuje czasu + jest cofnięte o godzinę)
-# Przetwarzanie danych
 
 # if old cars.json file exists, delete it
 if os.path.exists("cars.json"):
@@ -127,7 +126,6 @@ def find_new_cars(latest_data):
             old_car["available"] = False
             old_car["availableImage"] = "red-av.png"
             removed_cars_counter += 1
-            print(old_car)
 
     # create and show Windows toast if any car stopped being available
     if removed_cars_counter:
@@ -167,6 +165,7 @@ def fetch_data():
 
     response = response.json()
     parsed_json = response["cars"]
+
     # process json data
     processed_cars = find_new_cars(parsed_json)
 
