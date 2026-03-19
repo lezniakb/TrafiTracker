@@ -105,6 +105,11 @@ def find_new_cars(latest_data):
             # add new cars from the latest refresh
             new_cars.append(new_car)
             new_cars_counter += 1
+        else:
+            # update "lastUpdate" value
+            for old_car in old_cars:
+                if old_car["id"] == new_car["id"]:
+                    old_car["lastUpdate"] = new_car["lastUpdate"]
 
     # create and show Windows toast for new cars
     if new_cars_counter:
@@ -117,7 +122,7 @@ def find_new_cars(latest_data):
         )
         new_cars_toast.show()
 
-    # update cars information if they stopped being available
+    # scenario 3: cars they stopped being available
     for old_car in old_cars:
         if old_car["id"] not in new_car_ids and old_car["available"] == True:
             old_car["available"] = False
@@ -176,7 +181,11 @@ def prepare_data_to_gui():
     for car in data:
         car["availableGUI"] = "Tak" if car["available"] == True else "Nie"
         if "T" in car["lastUpdate"]:
-            car["lastUpdate"] = car["lastUpdate"].replace("T", " ")[:-1]
+            hour_timestamp = str(int(car["lastUpdate"][11:13]) + 1)
+            hour_timestamp = "0" + hour_timestamp if len(hour_timestamp) == 1 else hour_timestamp
+            last_update = car["lastUpdate"][0:11] + hour_timestamp + car["lastUpdate"][13:]
+
+            car["lastUpdate"] = last_update.replace("T", " ")[:-1]
         cars.append(car)
 
     return cars
