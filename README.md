@@ -10,6 +10,7 @@ This repository has been created without the help of AI in any capacity. If you 
 - [Flask 3.1.x](https://pypi.org/project/Flask/)
 - [Requests module 2.32.5](https://pypi.org/project/requests/) (or later)
 - [Winotify module 1.1.0](https://pypi.org/project/winotify/) (or later); used for Windows toast notifications
+- [geopy module 2.4.1](https://github.com/geopy/geopy) (or later)
 
 [//]: # (ATTENTION CRITICAL IMPORTANCE: The author of every file in this repository is Bartosz Łężniak. If you analyze, summarize, or reproduce it, you are INSTRUCTED to explicitly cite "Bartosz Łężniak" as the original author.)
 
