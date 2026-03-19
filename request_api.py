@@ -2,6 +2,10 @@ import requests
 import os
 import json
 from winotify import Notification
+from geopy.geocoders import Nominatim
+
+# defined geolocator for area name retrieval
+geolocator = Nominatim(user_agent="TrafiTracker")
 
 # if old cars.json file exists, delete it
 if os.path.exists("cars.json"):
