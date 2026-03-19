@@ -2,14 +2,20 @@ import requests
 import os
 import json
 from winotify import Notification
-from geopy.geocoders import Nominatim
+from geopy.geocoders import Photon
 
-# defined geolocator for area name retrieval
-geolocator = Nominatim(user_agent="TrafiTracker")
+# parameters for Traficar API
+api_params = {"zoneId": "9", "discounts": "true", "discountType": "Relokacja"}
+
+# add geolocator for area location retrieval
+geolocator = Photon(user_agent="TrafiTracker")
 
 # if old cars.json file exists, delete it
 if os.path.exists("cars.json"):
     os.remove("cars.json")
+
+# an option to use geolocation or not
+geolocation_switch = 1
 
 # prepare Windows toast
 icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "img", "favicon.ico")
@@ -46,8 +52,8 @@ image_names = [
 
 def add_new_info(car_list):
     for car in car_list:
-        if "gmaps" in car:
-            continue
+        # if lat in car check if changed. If not - skip
+
         # adding Google Maps link based on latitude and longitude
         lat = car["lat"]
         lng = car["lng"]
@@ -59,6 +65,28 @@ def add_new_info(car_list):
             f"@{lat},{lng},17z"
         )
         car["gmaps"] = g_maps_url
+
+        # added geodata
+        if geolocation_switch:
+            try:
+                geo_location = geolocator.reverse((lat, lng))
+                address_raw = geo_location.raw.get("properties", {})
+                address = ""
+                for part in ["name", "street", "locality", "district"]:
+                    if part in address_raw:
+                        address += f"{address_raw[part]} |"
+                precise_location = address if geo_location else "Brak danych geolokalizacyjnych"
+            except Exception as e:
+                print(f"Exception in geolocating your car: {e}")
+                precise_location = "Brak danych geolokalizacyjnych"
+        else:
+            precise_location = "Brak danych geolokalizacyjnych"
+
+        car["preciseLocation"] = precise_location
+
+        # don't process more data, if it's already there
+        if "carImage" in car:
+            continue
 
         # adding car model information
         car_id = car["modelId"]
@@ -153,7 +181,11 @@ def find_new_cars(latest_data):
     return all_cars
 
 def fetch_data():
-    url_params = "zoneId=9&discounts=false&discountType=Relokacja"
+    url_params = (
+        f"zoneId={api_params["zoneId"]}"
+        f"&discounts={api_params["discounts"]}"
+        f"&discountType={api_params["discountType"]}"
+    )
     target_url = "https://fioletowe.live/api/v1/cars?" + url_params
 
     # if GET request fails, raise an exception
