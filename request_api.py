@@ -7,15 +7,15 @@ from geopy.geocoders import Photon
 # parameters for Traficar API
 api_params = {"zoneId": "9", "discounts": "true", "discountType": "Relokacja"}
 
+# an option to use geolocation or not
+geolocation_switch = 0
+
 # add geolocator for area location retrieval
-geolocator = Photon(user_agent="TrafiTracker")
+geolocator = Photon(user_agent="TrafiTracker2")
 
 # if old cars.json file exists, delete it
 if os.path.exists("cars.json"):
     os.remove("cars.json")
-
-# an option to use geolocation or not
-geolocation_switch = 1
 
 # prepare Windows toast
 icon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static", "img", "favicon.ico")
